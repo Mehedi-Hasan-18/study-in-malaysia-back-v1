@@ -1,6 +1,7 @@
 from rest_framework import status, viewsets
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import action, api_view, authentication_classes, permission_classes
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 
 from accounts.authentication import FirebaseAuthentication
@@ -17,6 +18,7 @@ class ScholarshipViewSet(viewsets.ModelViewSet):
     serializer_class = ScholarshipSerializer
     authentication_classes = [FirebaseAuthentication, SessionAuthentication]
     permission_classes = [IsStaffOrReadOnly]
+    parser_classes = [JSONParser, FormParser, MultiPartParser]
     filterset_class = ScholarshipFilter
     search_fields = ["name", "description", "eligible_country"]
     ordering_fields = ["application_deadline", "coverage_percentage", "name"]

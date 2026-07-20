@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import action
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 
 from accounts.authentication import FirebaseAuthentication
@@ -26,6 +27,7 @@ class UniversityViewSet(viewsets.ModelViewSet):
     serializer_class = UniversitySerializer
     authentication_classes = [FirebaseAuthentication, SessionAuthentication]
     permission_classes = [IsStaffOrReadOnly]
+    parser_classes = [JSONParser, FormParser, MultiPartParser]
     filterset_class = UniversityFilter
     search_fields = ["name", "short_description", "full_description"]
     ordering_fields = ["name", "established_year", "total_students"]
