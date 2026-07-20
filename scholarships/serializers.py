@@ -1,3 +1,5 @@
+import json
+
 from rest_framework import serializers
 
 from common.fields import CommaDecimalSerializerField
@@ -6,14 +8,22 @@ from common.serializers import CloudinaryUploadMixin
 from .models import Scholarship, ScholarshipApplication
 
 
+class EligibleLevelField(serializers.ListField):
+    child = serializers.ChoiceField(choices=Scholarship.ELIGIBLE_LEVEL_CHOICES)
+
+    def to_internal_value(self, data):
+        if isinstance(data, str):
+            try:
+                data = json.loads(data)
+            except json.JSONDecodeError:
+                data = [item.strip() for item in data.split(",") if item.strip()]
+        return super().to_internal_value(data)
+
+
 class ScholarshipSerializer(CloudinaryUploadMixin, serializers.ModelSerializer):
     brochure = serializers.FileField(write_only=True, required=False)
     coverage_percentage = CommaDecimalSerializerField(max_digits=5, decimal_places=2)
-    eligible_level = serializers.ListField(
-        child=serializers.ChoiceField(choices=Scholarship.ELIGIBLE_LEVEL_CHOICES),
-        required=False,
-        allow_empty=True,
-    )
+    eligible_level = EligibleLevelField(required=False, allow_empty=True)
 
     cloudinary_upload_fields = {
         "brochure": {
