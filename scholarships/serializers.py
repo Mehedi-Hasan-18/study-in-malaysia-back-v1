@@ -1,9 +1,22 @@
 from rest_framework import serializers
 
+from common.serializers import CloudinaryUploadMixin
+
 from .models import Scholarship, ScholarshipApplication
 
 
-class ScholarshipSerializer(serializers.ModelSerializer):
+class ScholarshipSerializer(CloudinaryUploadMixin, serializers.ModelSerializer):
+    brochure = serializers.FileField(write_only=True, required=False)
+
+    cloudinary_upload_fields = {
+        "brochure": {
+            "folder": lambda instance: f"scholarships/{instance.id}/brochure/",
+            "public_id_field": "brochure_public_id",
+            "url_field": "brochure_url",
+            "resource_type": "raw",
+        },
+    }
+
     class Meta:
         model = Scholarship
         fields = [
@@ -16,9 +29,11 @@ class ScholarshipSerializer(serializers.ModelSerializer):
             "eligible_level",
             "eligible_country",
             "application_deadline",
+            "brochure",
             "brochure_public_id",
             "brochure_url",
         ]
+        read_only_fields = ["brochure_public_id", "brochure_url"]
 
 
 class ScholarshipApplicationSerializer(serializers.ModelSerializer):
