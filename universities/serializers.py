@@ -1,13 +1,15 @@
 from rest_framework import serializers
 
 from common.cloudinary_utils import upload_file
+from common.fields import CommaDecimalSerializerField
 from common.serializers import CitySerializer, CloudinaryUploadMixin, StateSerializer
 
 from .models import Gallery, University
 
 
 class GallerySerializer(CloudinaryUploadMixin, serializers.ModelSerializer):
-    image = serializers.ImageField(write_only=True)
+    image = serializers.FileField(write_only=True)
+    display_order = CommaDecimalSerializerField(max_digits=8, decimal_places=2, required=False)
 
     cloudinary_upload_fields = {
         "image": {
@@ -39,8 +41,10 @@ class UniversitySerializer(CloudinaryUploadMixin, serializers.ModelSerializer):
     state_detail = StateSerializer(source="state", read_only=True)
     city_detail = CitySerializer(source="city", read_only=True)
     gallery = GallerySerializer(many=True, read_only=True)
-    logo = serializers.ImageField(write_only=True, required=False)
-    cover = serializers.ImageField(write_only=True, required=False)
+    logo = serializers.FileField(write_only=True, required=False)
+    cover = serializers.FileField(write_only=True, required=False)
+    established_year = CommaDecimalSerializerField(max_digits=8, decimal_places=2, required=False, allow_null=True)
+    total_students = CommaDecimalSerializerField(max_digits=12, decimal_places=2, required=False, allow_null=True)
 
     cloudinary_upload_fields = {
         "logo": {

@@ -1,13 +1,14 @@
 from django.contrib import admin
 from django import forms
 
+from common.admin import CommaDecimalAdminMixin
 from common.cloudinary_utils import delete_file, upload_file
 
 from .models import Blog, FAQ, Inquiry, News
 
 
 class CoverUploadAdminForm(forms.ModelForm):
-    cover = forms.ImageField(required=False, help_text="Upload cover image to Cloudinary. Replaces existing cover.")
+    cover = forms.FileField(required=False, help_text="Upload cover image to Cloudinary. Replaces existing cover.")
 
     class Meta:
         fields = "__all__"
@@ -64,7 +65,7 @@ class BlogAdmin(CoverUploadAdminMixin, admin.ModelAdmin):
 
 
 @admin.register(FAQ)
-class FAQAdmin(admin.ModelAdmin):
+class FAQAdmin(CommaDecimalAdminMixin, admin.ModelAdmin):
     list_display = ["question", "category", "display_order"]
     search_fields = ["question", "answer", "category"]
     list_filter = ["category"]

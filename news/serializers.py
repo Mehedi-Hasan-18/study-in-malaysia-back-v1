@@ -1,12 +1,13 @@
 from rest_framework import serializers
 
+from common.fields import CommaDecimalSerializerField
 from common.serializers import CloudinaryUploadMixin
 
 from .models import Blog, FAQ, Inquiry, News
 
 
 class NewsSerializer(CloudinaryUploadMixin, serializers.ModelSerializer):
-    cover = serializers.ImageField(write_only=True, required=False)
+    cover = serializers.FileField(write_only=True, required=False)
 
     cloudinary_upload_fields = {
         "cover": {
@@ -24,7 +25,7 @@ class NewsSerializer(CloudinaryUploadMixin, serializers.ModelSerializer):
 
 
 class BlogSerializer(CloudinaryUploadMixin, serializers.ModelSerializer):
-    cover = serializers.ImageField(write_only=True, required=False)
+    cover = serializers.FileField(write_only=True, required=False)
 
     cloudinary_upload_fields = {
         "cover": {
@@ -42,6 +43,8 @@ class BlogSerializer(CloudinaryUploadMixin, serializers.ModelSerializer):
 
 
 class FAQSerializer(serializers.ModelSerializer):
+    display_order = CommaDecimalSerializerField(max_digits=8, decimal_places=2, required=False)
+
     class Meta:
         model = FAQ
         fields = ["id", "question", "answer", "category", "display_order"]

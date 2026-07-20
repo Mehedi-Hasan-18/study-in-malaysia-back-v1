@@ -1,9 +1,16 @@
 from rest_framework import serializers
 
+from common.fields import CommaDecimalSerializerField
+
 from .models import TuitionFee
 
 
 class TuitionFeeSerializer(serializers.ModelSerializer):
+    tuition_amount = CommaDecimalSerializerField(max_digits=10, decimal_places=2)
+    registration_fee = CommaDecimalSerializerField(max_digits=10, decimal_places=2, required=False)
+    misc_fee = CommaDecimalSerializerField(max_digits=10, decimal_places=2, required=False)
+    bdt_equivalent = CommaDecimalSerializerField(max_digits=12, decimal_places=2, required=False, allow_null=True)
+
     class Meta:
         model = TuitionFee
         fields = [

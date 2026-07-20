@@ -1,4 +1,7 @@
-from rest_framework import viewsets
+from decimal import Decimal, InvalidOperation
+
+from django.db.models import Max
+from rest_framework import status, viewsets
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
@@ -6,6 +9,8 @@ from rest_framework.response import Response
 
 from accounts.authentication import FirebaseAuthentication
 from accounts.permissions import IsStaffOrReadOnly
+from common.cloudinary_utils import upload_file
+from common.fields import normalize_number
 from faculties.models import Faculty
 from faculties.serializers import FacultySerializer
 from intakes.models import Intake
@@ -50,8 +55,42 @@ class UniversityViewSet(viewsets.ModelViewSet):
             return self.get_paginated_response(serializer.data)
         return Response({"data": serializer.data})
 
-    @action(detail=True, methods=["get"])
+    @action(detail=True, methods=["get", "post"])
     def gallery(self, request, pk=None):
+        if request.method == "POST":
+            university = self.get_object()
+            images = (
+                request.FILES.getlist("images")
+                or request.FILES.getlist("images[]")
+                or request.FILES.getlist("image")
+                or request.FILES.getlist("files")
+                or request.FILES.getlist("files[]")
+            )
+            if not images:
+                return Response({"error": "images is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                start_order = Decimal(normalize_number(request.data.get("display_order", "")))
+            except (InvalidOperation, TypeError):
+                max_order = Gallery.objects.filter(university=university).aggregate(Max("display_order"))["display_order__max"]
+                start_order = (max_order or 0) + 1
+
+            created_gallery = []
+            for index, image in enumerate(images):
+                result = upload_file(image, f"universities/{university.id}/gallery/", resource_type="image")
+                created_gallery.append(
+                    Gallery.objects.create(
+                        university=university,
+                        image_public_id=result["public_id"],
+                        image_url=result["secure_url"],
+                        caption=request.data.get("caption", ""),
+                        display_order=start_order + index,
+                    )
+                )
+
+            serializer = GallerySerializer(created_gallery, many=True)
+            return Response({"data": serializer.data}, status=status.HTTP_201_CREATED)
+
         queryset = Gallery.objects.filter(university_id=pk).order_by("display_order", "id")
         page = self.paginate_queryset(queryset)
         serializer = GallerySerializer(page or queryset, many=True)

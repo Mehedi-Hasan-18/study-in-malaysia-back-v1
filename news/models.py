@@ -7,7 +7,7 @@ class News(models.Model):
     body = models.TextField()
     cover_public_id = models.CharField(max_length=255, blank=True)
     cover_url = models.URLField(blank=True)
-    published_at = models.DateTimeField()
+    published_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = "news"
@@ -26,7 +26,7 @@ class Blog(models.Model):
     cover_url = models.URLField(blank=True)
     author = models.CharField(max_length=100, blank=True)
     tags = models.CharField(max_length=300, blank=True)
-    published_at = models.DateTimeField()
+    published_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = "blog"
@@ -40,7 +40,7 @@ class FAQ(models.Model):
     question = models.CharField(max_length=300)
     answer = models.TextField()
     category = models.CharField(max_length=100, blank=True)
-    display_order = models.IntegerField(default=0)
+    display_order = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
     class Meta:
         db_table = "faq"

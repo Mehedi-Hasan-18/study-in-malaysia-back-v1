@@ -2,9 +2,20 @@ from django.db import models
 
 
 class Scholarship(models.Model):
+    LEVEL_FOUNDATION = "foundation"
+    LEVEL_DIPLOMA = "diploma"
+    LEVEL_BACHELOR = "bachelor"
+    LEVEL_MASTERS = "masters"
+    ELIGIBLE_LEVEL_CHOICES = [
+        (LEVEL_FOUNDATION, "Foundation"),
+        (LEVEL_DIPLOMA, "Diploma"),
+        (LEVEL_BACHELOR, "Bachelor"),
+        (LEVEL_MASTERS, "Masters"),
+    ]
+
     name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
-    description = models.TextField()
+    description = models.TextField(blank=True)
     university = models.ForeignKey(
         "universities.University",
         on_delete=models.SET_NULL,
@@ -12,10 +23,10 @@ class Scholarship(models.Model):
         blank=True,
         related_name="scholarships",
     )
-    coverage_percentage = models.IntegerField()
-    eligible_level = models.CharField(max_length=20)
+    coverage_percentage = models.DecimalField(max_digits=5, decimal_places=2)
+    eligible_level = models.JSONField(default=list, blank=True)
     eligible_country = models.CharField(max_length=100, blank=True)
-    application_deadline = models.DateField()
+    application_deadline = models.DateField(null=True, blank=True)
     brochure_public_id = models.CharField(max_length=255, blank=True)
     brochure_url = models.URLField(blank=True)
 

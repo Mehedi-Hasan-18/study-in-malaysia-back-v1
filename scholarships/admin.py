@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django import forms
 
+from common.admin import CommaDecimalAdminMixin
 from common.cloudinary_utils import delete_file, upload_file
 
 from .models import Scholarship, ScholarshipApplication
@@ -8,17 +9,35 @@ from .models import Scholarship, ScholarshipApplication
 
 class ScholarshipAdminForm(forms.ModelForm):
     brochure = forms.FileField(required=False, help_text="Upload brochure to Cloudinary. Replaces existing brochure.")
+    eligible_level = forms.MultipleChoiceField(
+        choices=Scholarship.ELIGIBLE_LEVEL_CHOICES,
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
 
     class Meta:
         model = Scholarship
         fields = "__all__"
 
 
+class EligibleLevelFilter(admin.SimpleListFilter):
+    title = "eligible level"
+    parameter_name = "eligible_level"
+
+    def lookups(self, request, model_admin):
+        return Scholarship.ELIGIBLE_LEVEL_CHOICES
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(eligible_level__contains=[self.value()])
+        return queryset
+
+
 @admin.register(Scholarship)
-class ScholarshipAdmin(admin.ModelAdmin):
+class ScholarshipAdmin(CommaDecimalAdminMixin, admin.ModelAdmin):
     form = ScholarshipAdminForm
     list_display = ["name", "university", "coverage_percentage", "eligible_level", "eligible_country", "application_deadline"]
-    list_filter = ["university", "eligible_level", "eligible_country", "application_deadline"]
+    list_filter = ["university", EligibleLevelFilter, "eligible_country", "application_deadline"]
     search_fields = ["name", "description", "eligible_country"]
     prepopulated_fields = {"slug": ["name"]}
     readonly_fields = ["brochure_public_id", "brochure_url"]

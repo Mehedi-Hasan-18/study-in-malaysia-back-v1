@@ -15,8 +15,7 @@ class Intake(models.Model):
         related_name="intakes",
     )
     name = models.CharField(max_length=100)
-    application_deadline = models.DateField()
-    start_date = models.DateField()
+    start_date = models.DateField(null=True, blank=True)
 
     class Meta:
         db_table = "intake"

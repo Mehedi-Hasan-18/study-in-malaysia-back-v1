@@ -23,7 +23,6 @@ class IntakeTests(APITestCase):
         Intake.objects.create(
             university=university,
             name="January 2027",
-            application_deadline=date(2026, 12, 1),
             start_date=date(2027, 1, 15),
         )
 

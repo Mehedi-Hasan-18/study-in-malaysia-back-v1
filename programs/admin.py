@@ -1,5 +1,7 @@
 from django.contrib import admin
 
+from common.admin import CommaDecimalAdminMixin
+
 from .models import Program, ProgramRequirement
 
 
@@ -9,7 +11,7 @@ class ProgramRequirementInline(admin.TabularInline):
 
 
 @admin.register(Program)
-class ProgramAdmin(admin.ModelAdmin):
+class ProgramAdmin(CommaDecimalAdminMixin, admin.ModelAdmin):
     list_display = ["name", "level", "university", "faculty", "duration_months", "tuition_fee_display"]
     list_filter = ["level", "university", "faculty"]
     search_fields = ["name", "description", "university__name", "faculty__name"]

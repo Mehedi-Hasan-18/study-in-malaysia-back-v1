@@ -9,4 +9,4 @@ class IntakeViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = IntakeSerializer
     filterset_fields = ["university", "program"]
     search_fields = ["name", "university__name", "program__name"]
-    ordering_fields = ["application_deadline", "start_date", "name"]
+    ordering_fields = ["start_date", "name"]

@@ -26,7 +26,7 @@ class Program(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
     level = models.CharField(choices=LEVEL_CHOICES, max_length=20)
-    duration_months = models.IntegerField()
+    duration_months = models.DecimalField(max_digits=6, decimal_places=2)
     language = models.CharField(max_length=50, default="English")
     description = models.TextField(blank=True)
     tuition_fee_display = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
@@ -47,7 +47,7 @@ class Program(models.Model):
 class ProgramRequirement(models.Model):
     program = models.ForeignKey(Program, on_delete=models.CASCADE, related_name="requirements")
     requirement_type = models.CharField(max_length=50)
-    description = models.TextField()
+    description = models.TextField(blank=True)
 
     class Meta:
         db_table = "program_requirement"

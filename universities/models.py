@@ -11,8 +11,8 @@ class University(models.Model):
 
     name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
-    short_description = models.CharField(max_length=300)
-    full_description = models.TextField()
+    short_description = models.CharField(max_length=300, blank=True)
+    full_description = models.TextField(blank=True)
     university_type = models.CharField(choices=UNIVERSITY_TYPE_CHOICES, max_length=10)
     state = models.ForeignKey("common.State", on_delete=models.SET_NULL, null=True, blank=True)
     city = models.ForeignKey("common.City", on_delete=models.SET_NULL, null=True, blank=True)
@@ -25,8 +25,8 @@ class University(models.Model):
     website = models.URLField(blank=True)
     contact_email = models.EmailField(blank=True)
     contact_phone = models.CharField(max_length=30, blank=True)
-    established_year = models.IntegerField(null=True, blank=True)
-    total_students = models.IntegerField(null=True, blank=True)
+    established_year = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+    total_students = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
 
     class Meta:
         db_table = "university"
@@ -46,7 +46,7 @@ class Gallery(models.Model):
     image_public_id = models.CharField(max_length=255)
     image_url = models.URLField()
     caption = models.CharField(max_length=200, blank=True)
-    display_order = models.IntegerField(default=0)
+    display_order = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
     class Meta:
         db_table = "gallery"

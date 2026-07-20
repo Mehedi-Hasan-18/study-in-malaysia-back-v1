@@ -21,7 +21,7 @@ class ScholarshipTests(APITestCase):
             slug="engineering-merit",
             description="Merit scholarship",
             coverage_percentage=100,
-            eligible_level="bachelor",
+            eligible_level=["bachelor"],
             eligible_country="Bangladesh",
             application_deadline=date(2027, 1, 1),
         )

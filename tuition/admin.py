@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django import forms
 
+from common.admin import CommaDecimalAdminMixin
 from common.cloudinary_utils import delete_file, upload_file
 
 from .models import TuitionFee
@@ -21,7 +22,7 @@ class TuitionFeeAdminForm(forms.ModelForm):
 
 
 @admin.register(TuitionFee)
-class TuitionFeeAdmin(admin.ModelAdmin):
+class TuitionFeeAdmin(CommaDecimalAdminMixin, admin.ModelAdmin):
     form = TuitionFeeAdminForm
     list_display = [
         "program",
